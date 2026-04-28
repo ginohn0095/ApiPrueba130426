@@ -20,17 +20,24 @@ namespace ApiPrueba130426.Data
                 new Tabla1
                 {
                     Id = 1,
-                    Nombre = "Primero"
+                    Nombre = "Primero",
+                    Cantidad = 11,
+                    Descripcion = "Descripción del primer elemento"
+
                 },
                 new Tabla1
                 {
                     Id = 2,
-                    Nombre = "Segundo"
+                    Nombre = "Segundo",
+                     Cantidad = 10,
+                    Descripcion = "Descripción del primer elemento"
                 },
                 new Tabla1
                 {
                     Id = 3,
-                    Nombre = "Tercero"
+                    Nombre = "Tercero",
+                     Cantidad = 12,
+                    Descripcion = "Descripción del primer elemento"
                 });
 
 

@@ -2,10 +2,7 @@
 using ApiPrueba130426.Data;
 using Microsoft.EntityFrameworkCore;
 using ApiPrueba130426.Models;
-using System.Collections.Immutable;
-using Microsoft.Win32;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Text.Json;
 
 namespace ApiPrueba130426.Controllers
 {
@@ -20,11 +17,6 @@ namespace ApiPrueba130426.Controllers
             _db = db;
         }
 
-
-
-
-
-
         // GET: api/<Tabla1Controller>
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -37,7 +29,7 @@ namespace ApiPrueba130426.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var consulta = await _db.Tabla1.Where(x=> x.Id.Equals(id)).ToListAsync();
+            var consulta = _db.Tabla1.Where(x => x.Id.Equals(id)).ToListAsync();
             return Ok(new { exito = true, consulta });
         }
 
@@ -51,8 +43,8 @@ namespace ApiPrueba130426.Controllers
             return CreatedAtAction(nameof(Get), new { Id = registro.Id },
                 new
                 {
-                    ok = true,
-                    mensaje = "registro creado exitosamente",
+                    OK = true,
+                    mensaje = "Registro creado exitosamente",
                     data = registro
                 });
         }
@@ -62,8 +54,10 @@ namespace ApiPrueba130426.Controllers
         public async Task<IActionResult> Put(int id, [FromBody] Tabla1 registro)
         {
             var consulta = await _db.Tabla1.FindAsync(id);
-            consulta Id = consulta.Id;
+            consulta.Id = registro.Id;
             consulta.Nombre = registro.Nombre;
+            consulta.Cantidad = registro.Cantidad;
+            consulta.Descripcion = registro.Descripcion;
 
             _db.Entry(consulta).State = EntityState.Modified;
             await _db.SaveChangesAsync();
@@ -71,35 +65,77 @@ namespace ApiPrueba130426.Controllers
             return Ok(
                 new
                 {
-                    ok = true,
-                    mensaje = "registro actualizado con exito",
+                    OK = true,
+                    mensaje = "Registro creado exitosamente",
                     data = registro
                 });
-
-                
-
-            
-
         }
 
         // DELETE api/<Tabla1Controller>/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var consulta = await _db.FindAsync(id);
+            var consulta = await _db.Tabla1.FindAsync(id);
             _db.Tabla1.Remove(consulta);
 
             await _db.SaveChangesAsync();
 
             return Ok(
-               new
-               {
-                   ok = true,
-                   mensaje = "registro actualizado con exito",
-                   data = consulta
-               });
+                new
+                {
+                    OK = true,
+                    mensaje = "Registro creado exitosamente",
+                    data = consulta
+                });
+        }
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchTabla1(int id, [FromBody] Dictionary<string, object> actualizar)
+        {
+            var registro = await _db.Tabla1.FindAsync(id);
+            foreach (var campo in actualizar) 
+            {
+                switch (campo.Key.ToLower())
+                {
+                    case "nombre": 
+                        registro.Nombre = campo.Value.ToString();
+                        break;
+                    case "cantidad":
+                        registro.Cantidad = Convert.ToInt32(campo.Value);
+                        break;
+                    case "descripcion":
+                        registro.Descripcion = campo.Value.ToString();
+                        break;   
+                }
+                await _db.SaveChangesAsync();
 
+
+            }
+            return Ok(
+                new
+                {
+                    OK = true,
+                    mensaje = "Registro actualizado exitosamente",
+                    data = registro
+                });
 
         }
+     
+        private int ConvierteAEntero(object valor)
+        {
+            if (valor == null)
+            {
+                return 0;
+            }
+            if (valor is JsonElement elemntoJson)
+            {
+                return elemntoJson.GetInt32();
+            }
+            if (valor is string cadenaValor)
+            {
+                return Convert.ToInt32(cadenaValor);
+            }
+            return Convert.ToInt32(valor);
+        }
     }
+    
 }

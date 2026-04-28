@@ -5,5 +5,6 @@
         public int Id { get; set; }
         public string? Apellido { get; set; }
         public int NumeroT { get; set; }
+        public string pelos { get; set; }
     }
 }
